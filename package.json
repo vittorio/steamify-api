@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "express": "^4.16.4",
+    "node-fetch": "^2.3.0"
+  },
+  "name": "steam-api-holder",
+  "version": "1.0.0",
+  "main": "server.js",
+  "author": "Vittorio <sexsportandrocknroll@gmail.com>",
+  "license": "MIT"
+}
