@@ -102,8 +102,8 @@ app.get('/api/v1/games', async (req, res) => {
         appId = appId.toString();
 
         if (appId.length) {
-          const hasAlreadyGame = _.some(storedGames, { appId });
-          const isPlaytimeChanged = hasAlreadyGame & _.some(storedGames, g => (g.appId === appId) && g.playtimeForever !== savedGame.playtimeForever);
+          const hasAlreadyGame = _.some(storedGames, g => (g.appId == appId));
+          const isPlaytimeChanged = hasAlreadyGame & _.some(storedGames, g => (g.appId == appId) && g.playtimeForever !== savedGame.playtimeForever);
 
           if (!hasAlreadyGame || isPlaytimeChanged) {
             if (!hasAlreadyGame) {
