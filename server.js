@@ -137,7 +137,7 @@ app.patch('/api/v1/games/:id', async (req, res) => {
 
   if (price) {
     await db.collection('games').doc(req.params.id).update({ price });
-    const index = _.findIndex(storedGames, { appId: req.params.id });
+    const index = _.findIndex(storedGames, g => g.appId == req.params.id );
     storedGames[index].price = price;
     res.statusCode = 200;
     return res.send('Updated successfully');
