@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const SteamApi = require('steam-api');
 const _ = require('lodash');
+const bodyParser = require('body-parser');
+
 
 const apiKey = '1AD897533C698E617B4F351C640EC53E';
 const userSteamId = '76561198080321262';
@@ -10,6 +12,8 @@ let steamApp = new SteamApi.App(apiKey);
 let player = new SteamApi.Player(apiKey, userSteamId);
 
 const app = express();
+
+app.use(bodyParser.json({ type: 'application/json' }));
 
 const firebase = require('firebase');
 const admin = require("firebase-admin");
@@ -77,7 +81,6 @@ const getGameMainInformation = ({
 
 
 let storedGames;
-let once = false
 
 app.get('/api/v1/games', async (req, res) => {
   let games = await player.GetOwnedGames(
@@ -102,39 +105,15 @@ app.get('/api/v1/games', async (req, res) => {
           const hasAlreadyGame = _.some(storedGames, { appId });
           const isPlaytimeChanged = hasAlreadyGame & _.some(storedGames, g => (g.appId === appId) && g.playtimeForever !== savedGame.playtimeForever);
 
-          // const storedGame = _.find(storedGames, {appId});
-          // const hasDetails = hasAlreadyGame && (storedGame.price || storedGame.metacritic || storedGame.categories)
-          //
-          // if (!hasDetails && !once) {
-          //   if (storedGame && storedGame.hasNoDetails) {
-          //
-          //   } else {
-          //
-          //     once = true
-          //     const details = await steamApp.appDetails(appId)
-          //       .catch((e) => {
-          //         db.collection('errors').doc(Date.now() + '').set({
-          //           appId: appId,
-          //           details: true,
-          //           errorCode: e.response.statusCode
-          //         });
-          //       });
-          //
-          //     console.log(appId, details);
-          //
-          //     if (details) {
-          //       const { price = {}, platforms = [], metacritic = '', categories = [], genres = [], release = {}} = details
-          //
-          //       savedGame = { ...savedGame,  price, platforms, metacritic, categories, genres, release }
-          //     }
-          //   }
-          // }
+          if (!hasAlreadyGame || isPlaytimeChanged) {
+            if (!hasAlreadyGame) {
+              return db.collection('games').doc(appId).set(savedGame);
+            } else {
+              const index = _.findIndex(storedGames, { appId });
+              storedGames.splice(index, 1, savedGame);
 
-          if (storedGames && (!hasAlreadyGame || isPlaytimeChanged)) {
-            const index = _.findIndex(storedGames, { appId });
-            storedGames.splice(index, 1, savedGame);
-
-            return db.collection('games').doc(appId).set(savedGame);
+              return db.collection('games').doc(appId).update(savedGame);
+            }
           }
         } else {
           return db.collection('errors').doc(Date.now() + '').set(savedGame);
@@ -151,6 +130,22 @@ app.get('/api/v1/games/:id', async (req, res) => {
     .catch(() => onError(res));
 
   res.json(result);
+});
+
+app.patch('/api/v1/games/:id', async (req, res) => {
+  const { price } = req.body;
+
+  if (price) {
+    await db.collection('games').doc(req.params.id).update({ price });
+    const index = _.findIndex(storedGames, { appId: req.params.id });
+    storedGames[index].price = price;
+    res.statusCode = 200;
+    return res.send('Updated successfully');
+  }
+
+  res.statusCode = 400;
+  res.send('Nothing to update');
+
 });
 
 
