@@ -121,13 +121,13 @@ app.get('/api/v1/games/:id', async (req, res) => {
 app.patch('/api/v1/games/:id', async (req, res) => {
   let { price } = req.body;
 
-  if (price && price.length && isNaN(parseInt(price))) {
+  if (price !== "" && isNaN(parseInt(price))) {
     res.statusCode = 400;
     res.send('Wrong price format');
     return
   }
 
-  price = price || '';
+  price = price || "";
 
   await db.collection('games').doc(req.params.id).update({ price });
   const index = _.findIndex(storedGames, g => g.appId == req.params.id );
