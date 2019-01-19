@@ -3,7 +3,8 @@ const cors = require('cors');
 const SteamApi = require('steam-api');
 const _ = require('lodash');
 const bodyParser = require('body-parser');
-
+const admin = require("firebase-admin");
+const serviceAccount = require('./steamify-61hub-firebase-adminsdk-l80ee-0150531b1d.json');
 
 const apiKey = '1AD897533C698E617B4F351C640EC53E';
 const userSteamId = '76561198080321262';
@@ -14,21 +15,6 @@ let player = new SteamApi.Player(apiKey, userSteamId);
 const app = express();
 
 app.use(bodyParser.json({ type: 'application/json' }));
-
-const firebase = require('firebase');
-const admin = require("firebase-admin");
-const firebaseConfig = {
-  apiKey: "AIzaSyD5KmSQcQ1CLDeyfEdnIl7SDCrTwc0GXFQ",
-  authDomain: "steamify-61hub.firebaseapp.com",
-  databaseURL: "https://steamify-61hub.firebaseio.com",
-  projectId: "steamify-61hub",
-  storageBucket: "steamify-61hub.appspot.com",
-  messagingSenderId: "497608429923"
-};
-
-const firebaseApp = firebase.initializeApp(firebaseConfig);
-
-const serviceAccount = require('./steamify-61hub-firebase-adminsdk-l80ee-0150531b1d.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -77,7 +63,7 @@ const getGameMainInformation = ({
   logo,
   header,
   lastSync
-})
+});
 
 
 let storedGames;
@@ -133,19 +119,21 @@ app.get('/api/v1/games/:id', async (req, res) => {
 });
 
 app.patch('/api/v1/games/:id', async (req, res) => {
-  const { price } = req.body;
+  let { price } = req.body;
 
-  if (price) {
-    await db.collection('games').doc(req.params.id).update({ price });
-    const index = _.findIndex(storedGames, g => g.appId == req.params.id );
-    storedGames[index].price = price;
-    res.statusCode = 200;
-    return res.send('Updated successfully');
+  if (price && price.length && isNaN(parseInt(price))) {
+    res.statusCode = 400;
+    res.send('Wrong price format');
+    return
   }
 
-  res.statusCode = 400;
-  res.send('Nothing to update');
+  price = price || '';
 
+  await db.collection('games').doc(req.params.id).update({ price });
+  const index = _.findIndex(storedGames, g => g.appId == req.params.id );
+  storedGames[index].price = price;
+  res.statusCode = 200;
+  return res.send('Updated successfully');
 });
 
 
