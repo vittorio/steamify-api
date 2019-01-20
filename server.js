@@ -27,7 +27,7 @@ const onError = (res) => {
 
 const excludedField = '-_id -__v'
 
-app.get('/api/v1/games', async (req, res) => {
+app.get('/v1/games', async (req, res) => {
   let games = await player.GetOwnedGames(
     userSteamId,
     optionalIncludeAppInfo = true,
@@ -58,14 +58,14 @@ app.get('/api/v1/games', async (req, res) => {
   res.json(games);
 });
 
-app.get('/api/v1/games/:id', async (req, res) => {
+app.get('/v1/games/:id', async (req, res) => {
   const result = await steamApp.appDetails(req.params.id)
     .catch(() => onError(res));
 
   res.json(result);
 });
 
-app.patch('/api/v1/games/:id', async (req, res) => {
+app.patch('/v1/games/:id', async (req, res) => {
   let {price} = req.body;
 
   if (typeof price !== 'number') {
