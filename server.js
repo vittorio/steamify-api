@@ -66,16 +66,22 @@ app.get('/v1/games/:id', async (req, res) => {
 });
 
 app.patch('/v1/games/:id', async (req, res) => {
-  let {price} = req.body;
+  let {price, dlc, hidden} = req.body;
 
-  if (typeof price !== 'number') {
-    res.statusCode = 400;
-    return res.send('The price must have an integer type');
+  const objToUpdate = {};
+
+  price && !isNaN(parseInt(price)) ? objToUpdate.price = price : '';
+  dlc && Array.isArray(dlc) ? objToUpdate.dlc = dlc : '';
+  typeof hidden === "boolean" ? objToUpdate.hidden = hidden : '';
+
+  if (Object.keys(objToUpdate).length === 0) {
+    res.status = 400;
+    return res.end('Error – no fields to update');
   }
 
   const game = await Game.findOneAndUpdate(
     {appId: req.params.id},
-    {price},
+    objToUpdate,
     {
       new: true,
       fields: excludedField
@@ -83,7 +89,6 @@ app.patch('/v1/games/:id', async (req, res) => {
 
   return res.json(game);
 });
-
 
 app.listen(3000, () => {
   console.log('Steamify api server');

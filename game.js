@@ -12,7 +12,12 @@ const GameSchema = new Schema({
   price: {type: Number, default: 0},
   playtimeForever: Number,
   logo: String,
-  lastSync: Number
+  lastSync: Number,
+  dlc: {type: [{
+    name: String,
+    price: Number
+  }], default: []},
+  hidden: {type: Boolean, default: false}
 });
 
 module.exports = mongoose.model('Games', GameSchema);
