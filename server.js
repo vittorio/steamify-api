@@ -70,13 +70,13 @@ app.patch('/v1/games/:id', async (req, res) => {
 
   const objToUpdate = {};
 
-  price && !isNaN(parseInt(price)) ? objToUpdate.price = price : '';
+  !isNaN(parseInt(price)) ? objToUpdate.price = price : '';
   dlc && Array.isArray(dlc) ? objToUpdate.dlc = dlc : '';
   typeof hidden === "boolean" ? objToUpdate.hidden = hidden : '';
 
   if (Object.keys(objToUpdate).length === 0) {
-    res.status = 400;
-    return res.end('Error – no fields to update');
+    res.statusCode = 400;
+    return res.end('No fields to update');
   }
 
   const game = await Game.findOneAndUpdate(
