@@ -3,8 +3,6 @@
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "express": "^4.16.4",
-    "firebase": "^5.7.2",
-    "firebase-admin": "^6.4.0",
     "lodash": "^4.17.11",
     "mongoose": "^5.4.2",
     "steam-api": "^1.1.3"

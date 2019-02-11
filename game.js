@@ -20,4 +20,4 @@ const GameSchema = new Schema({
   hidden: {type: Boolean, default: false}
 });
 
-module.exports = mongoose.model('Games', GameSchema);
+module.exports = mongoose.model('Game', GameSchema);
