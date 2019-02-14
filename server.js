@@ -4,6 +4,8 @@ const cors = require('cors');
 const SteamApi = require('steam-api');
 const _ = require('lodash');
 const bodyParser = require('body-parser');
+const autoIncrement = require('mongoose-auto-increment');
+
 
 const Game = require('./game');
 const Pack = require('./pack');
@@ -14,7 +16,9 @@ const userSteamId = '76561198080321262';
 let steamApp = new SteamApi.App(apiKey);
 let player = new SteamApi.Player(apiKey, userSteamId);
 
-mongoose.connect('mongodb://localhost:27017/steamify', {useNewUrlParser: true});
+const connection = mongoose.connect('mongodb://localhost:27017/steamify', {useNewUrlParser: true});
+
+autoIncrement.initialize(connection);
 
 const app = express();
 app.use(bodyParser.json({type: 'application/json'}));

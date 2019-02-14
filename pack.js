@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const autoIncrement = require('mongoose-auto-increment');
+
 const Schema = mongoose.Schema;
 
 const PackSchema = new Schema({
@@ -9,5 +11,7 @@ const PackSchema = new Schema({
         default: []
     }
 });
+
+PackSchema.plugin(autoIncrement.plugin, {model: 'Pack', field: 'packId'});
 
 module.exports = mongoose.model('Pack', PackSchema);
