@@ -137,7 +137,7 @@ app.patch('/v1/packs/:id', async (req, res) => {
   }
 
   const pack = await Pack.findOneAndUpdate(
-      {_id: req.params.id},
+      {packId: req.params.id},
       objToUpdate,
       {
         new: true,
