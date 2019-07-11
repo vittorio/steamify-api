@@ -1,2 +1,4 @@
 data/*.txt
 .idea
+node_modules
+yarn.lock

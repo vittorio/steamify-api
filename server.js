@@ -5,7 +5,6 @@ const SteamApi = require('steam-api');
 const _ = require('lodash');
 const bodyParser = require('body-parser');
 
-
 const Game = require('./game');
 const Pack = require('./pack');
 
@@ -41,10 +40,10 @@ app.get('/v1/games', async (req, res) => {
 
   if (games.length) {
     games = await Promise.all(
-      games.map(g => {
+      games.map(game => {
         return Game.findOneAndUpdate(
-          {appId: g.appId},
-          g,
+          {appId: game.appId},
+          game,
           {
             upsert: true,
             new: true,
@@ -68,13 +67,14 @@ app.get('/v1/games/:id', async (req, res) => {
 });
 
 app.patch('/v1/games/:id', async (req, res) => {
-  let {price, dlc, hidden} = req.body;
+  let {price, dlc, hidden, completed} = req.body;
 
   const objToUpdate = {};
 
   !isNaN(parseInt(price)) ? objToUpdate.price = price : '';
   dlc && Array.isArray(dlc) ? objToUpdate.dlc = dlc : '';
   typeof hidden === "boolean" ? objToUpdate.hidden = hidden : '';
+  typeof completed === "boolean" ? objToUpdate.completed = completed : '';
 
   if (Object.keys(objToUpdate).length === 0) {
     res.statusCode = 400;
