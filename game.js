@@ -19,6 +19,7 @@ const GameSchema = new Schema({
   }], default: []},
   hidden: {type: Boolean, default: false},
   completed: {type: Boolean, default: false},
+  endless: {type: Boolean, default: false},
 });
 
 module.exports = mongoose.model('Game', GameSchema);
