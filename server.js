@@ -67,14 +67,16 @@ app.get('/v1/games/:id', async (req, res) => {
 });
 
 app.patch('/v1/games/:id', async (req, res) => {
-  let {price, dlc, hidden, completed} = req.body;
+  // let {price, dlc, hidden, completed} = req.body;
 
-  const objToUpdate = {};
+  // const objToUpdate = {};
+  const objToUpdate = req.body;
 
-  !isNaN(parseInt(price)) ? objToUpdate.price = price : '';
-  dlc && Array.isArray(dlc) ? objToUpdate.dlc = dlc : '';
-  typeof hidden === "boolean" ? objToUpdate.hidden = hidden : '';
-  typeof completed === "boolean" ? objToUpdate.completed = completed : '';
+  // TODO add validations
+  // !isNaN(parseInt(price)) ? objToUpdate.price = price : '';
+  // dlc && Array.isArray(dlc) ? objToUpdate.dlc = dlc : '';
+  // typeof hidden === "boolean" ? objToUpdate.hidden = hidden : '';
+  // typeof completed === "boolean" ? objToUpdate.completed = completed : '';
 
   if (Object.keys(objToUpdate).length === 0) {
     res.statusCode = 400;
