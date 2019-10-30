@@ -4,7 +4,7 @@
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "lodash": "^4.17.11",
-    "mongoose": "^5.4.2",
+    "mongoose": "^5.7.5",
     "mongoose-plugin-autoinc": "^1.1.9",
     "steam-api": "^1.1.3"
   },
