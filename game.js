@@ -2,10 +2,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const GameSchema = new Schema({
-  playtimeTwoWeeksReadable: String,
   name: String,
-  playtimeForeverReadable: String,
-  appId: Number,
+  appId: {type: Number, required: true},
   playtimeTwoWeeks: Number,
   header: String,
   icon: String,
@@ -18,6 +16,7 @@ const GameSchema = new Schema({
     price: Number
   }], default: []},
   status: {type: String, default: 'default'},
+  store: {type: String, default: 'steam'}
 });
 
 module.exports = mongoose.model('Game', GameSchema);

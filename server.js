@@ -39,9 +39,9 @@ app.get('/v1/games', async (req, res) => {
   games = Array.isArray(games) ? games : [];
 
   if (games.length) {
-    games = await Promise.all(
-      games.map(game => {
-        return Game.findOneAndUpdate(
+    await Promise.all(
+      games.forEach(game => {
+        Game.findOneAndUpdate(
           {appId: game.appId},
           game,
           {
@@ -52,9 +52,9 @@ app.get('/v1/games', async (req, res) => {
           })
       })
     );
-  } else {
-    games = await Game.find({}, excludedField)
   }
+
+  games = await Game.find({}, excludedField)
 
   res.json(games);
 });
@@ -67,31 +67,21 @@ app.get('/v1/games/:id', async (req, res) => {
 });
 
 app.patch('/v1/games/:id', async (req, res) => {
-  // let {price, dlc, hidden, completed} = req.body;
-
-  // const objToUpdate = {};
-  const objToUpdate = req.body;
-
-  // TODO add validations
-  // !isNaN(parseInt(price)) ? objToUpdate.price = price : '';
-  // dlc && Array.isArray(dlc) ? objToUpdate.dlc = dlc : '';
-  // typeof hidden === "boolean" ? objToUpdate.hidden = hidden : '';
-  // typeof completed === "boolean" ? objToUpdate.completed = completed : '';
-
-  if (Object.keys(objToUpdate).length === 0) {
-    res.statusCode = 400;
-    return res.end('No fields to update');
-  }
-
   const game = await Game.findOneAndUpdate(
     {appId: req.params.id},
-    objToUpdate,
+    req.body,
     {
       new: true,
       fields: excludedField
     });
 
   return res.json(game);
+});
+
+app.post('/v1/games', async (req, res) => {
+  const game = new Game(req.body)
+  const response = await game.save();
+  res.json(response)
 });
 
 app.get('/v1/packs', async (req, res) => {
@@ -101,24 +91,7 @@ app.get('/v1/packs', async (req, res) => {
 });
 
 app.post('/v1/packs', async (req, res) => {
-  const { name, price } = req.body;
-  const objToCreate = {};
-
-  !isNaN(parseInt(price)) ? objToCreate.price = price : '';
-  name && name.length ? objToCreate.name = name : '';
-
-  if (!objToCreate.price) {
-    res.statusCode = 400;
-    return res.end('Price is required');
-  }
-
-  if (!objToCreate.name) {
-    res.statusCode = 400;
-    return res.end('Name is required');
-  }
-
-  const pack = new Pack(objToCreate);
-
+  const pack = new Pack(req.body);
   const response = await pack.save();
 
   res.json(response);
