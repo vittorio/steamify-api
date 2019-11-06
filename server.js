@@ -40,8 +40,8 @@ app.get('/v1/games', async (req, res) => {
 
   if (games.length) {
     await Promise.all(
-      games.forEach(game => {
-        Game.findOneAndUpdate(
+      games.map(game => {
+        return Game.findOneAndUpdate(
           {appId: game.appId},
           game,
           {
